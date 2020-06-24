@@ -26,19 +26,22 @@ class SimpleNN(Model):
 
         self.layers = [
             Layer(2, 4, activation=smooth_relu),
-            Layer(4, 4, activation=smooth_relu),
             Layer(4, 2, activation=sigmoid)
         ]
 
 X = np.array([
-    [1,0], [0,1],
-    [0,0], [1,1]
+    [1,0], 
+    [0,1],
+    [0,0], 
+    [1,1]
 ]).T
 
 y = np.array([
-    [1,0], [1,0],
-    [0,1], [0,1]
+    [1,0], 
+    [1,0],
+    [0,1], 
+    [0,1]
 ]).T
 
 nn = SimpleNN()
-nn.train_model(X, y, epochs=1000, lr=0.5)
+nn.train_model(X, y, epochs=1000, lr=0.5, sgd=True)

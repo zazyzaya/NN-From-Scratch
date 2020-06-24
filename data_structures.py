@@ -1,5 +1,9 @@
-from abc import ABC
 import numpy as np
+
+from abc import ABC
+from math import log
+from random import sample
+
 mm = np.matmul
 
 '''
@@ -82,14 +86,9 @@ class Layer:
         #dC/db = delta
         self.bias_update.append(delta)
         
-        # I feel like there's a vector operation that does this, 
-        # but I can't find one
         # dC/dw_ij = aj * d^L_i
-        weight_update = np.column_stack([delta]*a_prev.shape[0])
-        col = 0
-        for a in a_prev:
-            weight_update[:, col] *= a
-            col += 1
+        # so dC/dw_i = delta x a.T
+        weight_update =  mm(delta, a_prev.T)
 
         self.weight_update.append(weight_update)
         
@@ -183,11 +182,17 @@ class Model(ABC):
 
     '''
     Simple training loop. Does backprop on all samples. 
-    TODO impliment SGD 
     '''
-    def train_model(self, X, y, lr=0.001, epochs=800, verbose=1):
+    def train_model(self, X, y, lr=0.001, epochs=800, verbose=1, lr_decay=1-1e-6, sgd=False):
         for epoch in range(epochs):
             self.train()
+            
+            if sgd:
+                n = y.shape[1]
+                batch = sample(range(n-1), 2+int(log(n)))
+
+                self.backprop(X[:, batch], y[:, batch], lr)
+
             self.backprop(X, y, lr)
 
             self.eval()
@@ -201,7 +206,7 @@ class Model(ABC):
                 )
             )
 
-            lr *= 0.99999
+            lr *= lr_decay
 
         print('y: ')
         print(y.T)
