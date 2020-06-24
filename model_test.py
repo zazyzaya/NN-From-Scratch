@@ -44,4 +44,4 @@ y = np.array([
 ]).T
 
 nn = SimpleNN()
-nn.train_model(X, y, epochs=1000, lr=0.5, sgd=True)
+nn.train_model(X, y, epochs=1000, lr=0.5)
